@@ -1,3 +1,5 @@
 
 ^dev$
 ^LICENSE\.md$
+^FuelFrontalUtility\.Rproj$
+^\.Rproj\.user$

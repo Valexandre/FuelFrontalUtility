@@ -1,0 +1,122 @@
+---
+title: "flat_getprices.Rmd empty"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r development, include=FALSE}
+library(testthat)
+library(tidyverse)
+```
+
+```{r development-load}
+# Load already included functions if relevant
+pkgload::load_all(export_all = FALSE)
+```
+
+
+# GetPrices
+
+```{r function-GetPrices}
+#' GetPrices Sortir les prix moyens et médians
+#'
+#' @param dataset tibble un jeu de données propre
+#' @param fonction chaine de caracteres mean ou median selon la métrique souhaite
+#' @param dobydepartement logical selon qu'on veut le resultat par departement ou agrégé
+#'
+#' @return un tibble contenant les prix moyens ou médians du gazole, du SP98 et du E10
+#' @export
+#'
+#' @examples
+GetPrices <-
+  function(dataset,
+           fonction = "mean",
+           dobydepartement = TRUE) {
+    tmp <- dataset
+    
+    if (dobydepartement == TRUE & fonction == "mean") {
+      sortie <- tmp %>% group_by(departement) %>%
+        summarise(
+          PrixGazole = mean(as.numeric(Gazole), na.rm = TRUE),
+          PrixE10 = mean(as.numeric(E10), na.rm = TRUE),
+          PrixSP98 = mean(as.numeric(SP98), na.rm = TRUE)
+        ) %>%
+        mutate(operation = fonction)
+      return(sortie)
+    } else if (dobydepartement == FALSE & fonction == "mean") {
+      sortie <- tmp %>%mutate(departement="group")%>%group_by(departement)%>%
+        summarise(
+          PrixGazole = mean(as.numeric(Gazole), na.rm = TRUE),
+          PrixE10 = mean(as.numeric(E10), na.rm = TRUE),
+          PrixSP98 = mean(as.numeric(SP98), na.rm = TRUE)
+        ) %>%
+        mutate(operation = fonction)
+      return(sortie)
+    } else if (dobydepartement == TRUE & fonction == "median") {
+      sortie <- tmp %>% group_by(departement) %>%
+        summarise(
+          PrixGazole = median(as.numeric(Gazole), na.rm = TRUE),
+          PrixE10 = median(as.numeric(E10), na.rm = TRUE),
+          PrixSP98 = median(as.numeric(SP98), na.rm = TRUE)
+        ) %>%
+        mutate(operation = fonction)
+      return(sortie)
+    } else if (dobydepartement == FALSE & fonction == "median") {
+      sortie <- tmp %>%mutate(departement="group")%>%group_by(departement)%>%
+        summarise(
+          PrixGazole = median(as.numeric(Gazole), na.rm = TRUE),
+          PrixE10 = median(as.numeric(E10), na.rm = TRUE),
+          PrixSP98 = median(as.numeric(SP98), na.rm = TRUE)
+        ) %>%
+        mutate(operation = fonction)
+      return(sortie)
+    }
+  }
+  
+
+
+```
+
+```{r examples-GetPrices}
+dataset<-DonneesTest
+fonction<-"mean"
+depmean26<-GetPrices(dataset = dataset,fonction="mean",dobydepartement = TRUE )
+framedian26<-GetPrices(dataset = dataset,fonction="median",dobydepartement = FALSE )
+```
+
+```{r tests-GetPrices}
+test_that("GetPrices works", {
+  urlgdoctest <-
+    "https://docs.google.com/spreadsheets/d/1aTGGqcUAjWg8Lz5sqQ5CzCEN7LbZdKGV_PdQC4YZ6Qw/edit?usp=sharing"
+  urlgsheettest <- "26-janv"
+  dataset <-ImportAndCleanData(urlgdoc = urlgdoctest, urlgsheet = urlgsheettest)
+  expect_equal(
+    GetPrices(
+      dataset = dataset,
+      fonction = "median",
+      dobydepartement = FALSE
+    ),
+    structure(
+      list(
+        departement = "group",
+        PrixGazole = 1.947,
+        PrixE10 = 1.899,
+        PrixSP98 = 1.979,
+        operation = "median"
+      ),
+      row.names = c(NA,-1L),
+      class = c("tbl_df", "tbl", "data.frame")
+    )
+  )
+})
+```
+
+
+
+```{r development-inflate, eval=FALSE}
+# Run but keep eval=FALSE to avoid infinite loop
+# Execute in the console directly
+fusen::inflate(flat_file = "dev/flat_getprices.Rmd", vignette_name = "Get prices")
+```
+

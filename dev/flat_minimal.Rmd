@@ -7,6 +7,8 @@ editor_options:
 
 ```{r development, include=FALSE}
 library(testthat)
+library(tidyverse)
+library(googlesheets4)
 ```
 
 <!--
@@ -18,29 +20,64 @@ library(testthat)
 pkgload::load_all(export_all = FALSE)
 ```
 
-# my_fun
+# ImportAndCleanData
 
-```{r function-my_fun}
-#' my_fun Title
+```{r function-ImportAndCleanData}
+#' ImportAndCleanData : Recupere les Prix
 #'
-#' @return 1
+#' @param urlgdoc : l'url d'un google doc provenant du site gouvernemental
+#' @param urlgsheet : le titre de la feuille contenant les données
+#'
+#' @return un tibble contenant les prix du gazole, du SP98 et du E10
 #' @export
-#'
+#TODO rajouter les importfrom
+#' @import googlesheets4
 #' @examples
-my_fun <- function() {
-  1
+ImportAndCleanData <- function(urlgdoc,urlgsheet) {
+  
+  Prices_daily<-googlesheets4::read_sheet(urlgdoc,urlgsheet)
+  ModifPrices_daily<-Prices_daily%>%
+    mutate(departement=case_when(nchar(departement)==1~as.character(paste0("0",departement)),
+                                 nchar(departement)==2~as.character(departement),
+                                 TRUE~as.character(departement)))
+  ModifPrices_daily$trueGazole<-NA
+  ModifPrices_daily$trueE10<-NA
+  ModifPrices_daily$trueSP98<-NA
+  
+  for (i in 1:nrow(ModifPrices_daily)){
+    ModifPrices_daily$trueGazole[i]<-ifelse(is.null(unlist(ModifPrices_daily$Gazole[i])[[1]]),NA,unlist(ModifPrices_daily$Gazole[i])[[1]])
+    ModifPrices_daily$trueE10[i]<-ifelse(is.null(unlist(ModifPrices_daily$E10[i])[[1]]),NA,unlist(ModifPrices_daily$E10[i])[[1]])
+    ModifPrices_daily$trueSP98[i]<-ifelse(is.null(unlist(ModifPrices_daily$SP98[i])[[1]]),NA,unlist(ModifPrices_daily$SP98[i])[[1]])
+  }
+  CleanData<-ModifPrices_daily%>%select(1:6,8,starts_with("true"))%>%
+    mutate(latitude=as.numeric(latitude),
+           longitude=as.numeric(latitude))%>%
+    rename(Gazole=trueGazole,E10=trueE10,SP98=trueSP98)
+  return(CleanData)
 }
 ```
 
-```{r examples-my_fun}
-my_fun()
+```{r examples-ImportAndCleanData}
+urlgdoctest<-"https://docs.google.com/spreadsheets/d/1aTGGqcUAjWg8Lz5sqQ5CzCEN7LbZdKGV_PdQC4YZ6Qw/edit?usp=sharing"
+urlgsheettest<-"26-janv"
+# you may need to relog to avoid the "Request failed [429]. Retry " error, so use
+# gs4_auth() 
+DonneesTest<-ImportAndCleanData(urlgdoc = urlgdoctest, urlgsheet = urlgsheettest)
+head(DonneesTest)
 ```
 
-```{r tests-my_fun}
-test_that("my_fun works", {
+```{r tests-ImportAndCleanData}
+test_that("ImportAndCleanData works", {
+  urlgdoctest<-"https://docs.google.com/spreadsheets/d/1aTGGqcUAjWg8Lz5sqQ5CzCEN7LbZdKGV_PdQC4YZ6Qw/edit?usp=sharing"
+urlgsheettest<-"26-janv"
+  expect_equal(head(
+    ImportAndCleanData(urlgdoc = urlgdoctest, urlgsheet = urlgsheettest)%>%
+      pull(id)),c("54300001", "5120003", "91200001", "83160003", "14520003", 
+"27380002"))
 
 })
 ```
+
 
 
 ```{r development-inflate, eval=FALSE}
