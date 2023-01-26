@@ -101,7 +101,14 @@ devtools::check()
 # set and try pkgdown documentation website
 usethis::use_pkgdown()
 pkgdown::build_site()
-
+devtools::check()
+usethis::use_git_remote(
+  name = "origin",
+  url = "https://github.com/Valexandre/FuelFrontalUtility.git",
+  overwrite = TRUE
+)
+#puis 
+# git push -u origin main
 # build the tar.gz with vignettes to share with others
 devtools::build(vignettes = TRUE)
 ```
