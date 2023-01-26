@@ -1,0 +1,14 @@
+Package: FuelFrontalUtility
+Version: 0.0.0.9000
+Title: Fuel Frontal Utility : Tout Ce Qui Sera Utile Pour L'essence
+Description: Toutes les fonctions utiles pour les traitements essence.
+Authors@R: c(person(given = "Victor",
+         family = "Alexandre",
+         role = c("aut", "cre"),
+         email = "valexandre@leparisien.fr"),
+  person(given = "Le Parisien",
+         role = "cph"))
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
