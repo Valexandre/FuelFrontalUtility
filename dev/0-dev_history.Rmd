@@ -17,12 +17,12 @@ fusen::fill_description(
   pkg = here::here(),
   fields = list(
     Title = "Fuel Frontal Utility : tout ce qui sera utile pour l'essence",
-    Description = "Toutes les fonctions utiles pour les traitements essence",
+    Description = "Toutes les fonctions utiles pour les traitements essence.",
     `Authors@R` = c(
       person("Victor", "Alexandre", email = "valexandre@leparisien.fr", role = c("aut", "cre")),
       person(given = "Le Parisien", role = "cph")
     )
-  )
+  ),overwrite = TRUE
 )
 # Define License with use_*_license()
 usethis::use_mit_license("Victor Alexandre")

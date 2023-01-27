@@ -8,7 +8,10 @@ Authors@R: c(
 Description: Toutes les fonctions utiles pour les traitements essence.
 License: MIT + file LICENSE
 Imports: 
-    googlesheets4
+    dplyr,
+    googlesheets4,
+    magrittr,
+    tidyselect
 Suggests: 
     knitr,
     rmarkdown,

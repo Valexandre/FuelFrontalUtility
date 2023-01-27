@@ -8,6 +8,8 @@
 #' @return un tibble contenant les prix du gazole, du SP98 et du E10
 #' @export
 #' @import googlesheets4
+#' @importFrom dplyr mutate summarise select rename pull
+#' @importFrom tidyselect starts_with
 #' @examples
 #' urlgdoctest<-"https://docs.google.com/spreadsheets/d/1aTGGqcUAjWg8Lz5sqQ5CzCEN7LbZdKGV_PdQC4YZ6Qw/edit?usp=sharing"
 #' urlgsheettest<-"26-janv"
@@ -19,9 +21,9 @@ ImportAndCleanData <- function(urlgdoc,urlgsheet) {
   
   Prices_daily<-googlesheets4::read_sheet(urlgdoc,urlgsheet)
   ModifPrices_daily<-Prices_daily%>%
-    mutate(departement=case_when(nchar(departement)==1~as.character(paste0("0",departement)),
-                                 nchar(departement)==2~as.character(departement),
-                                 TRUE~as.character(departement)))
+    dplyr::mutate(departement=ifelse(nchar(departement)==1,as.character(paste0("0",departement)),
+                              ifelse(nchar(departement)==2,as.character(departement),
+                                 as.character(departement))))
   ModifPrices_daily$trueGazole<-NA
   ModifPrices_daily$trueE10<-NA
   ModifPrices_daily$trueSP98<-NA
@@ -31,9 +33,9 @@ ImportAndCleanData <- function(urlgdoc,urlgsheet) {
     ModifPrices_daily$trueE10[i]<-ifelse(is.null(unlist(ModifPrices_daily$E10[i])[[1]]),NA,unlist(ModifPrices_daily$E10[i])[[1]])
     ModifPrices_daily$trueSP98[i]<-ifelse(is.null(unlist(ModifPrices_daily$SP98[i])[[1]]),NA,unlist(ModifPrices_daily$SP98[i])[[1]])
   }
-  CleanData<-ModifPrices_daily%>%select(1:6,8,starts_with("true"))%>%
-    mutate(latitude=as.numeric(latitude),
+  CleanData<-ModifPrices_daily%>%dplyr::select(1:6,8,tidyselect::starts_with("true"))%>%
+    dplyr::mutate(latitude=as.numeric(latitude),
            longitude=as.numeric(latitude))%>%
-    rename(Gazole=trueGazole,E10=trueE10,SP98=trueSP98)
+    dplyr::rename(Gazole=trueGazole,E10=trueE10,SP98=trueSP98)
   return(CleanData)
 }

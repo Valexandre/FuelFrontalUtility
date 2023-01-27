@@ -1,5 +1,5 @@
 ---
-title: "Minimal"
+title: "minimal"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{minimal}
