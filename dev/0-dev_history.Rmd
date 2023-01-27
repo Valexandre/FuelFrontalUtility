@@ -69,7 +69,11 @@ usethis::use_package_doc()
 gitcreds::gitcreds_set()
 # Send your project to a new GitHub project
 usethis::use_github()
-
+#pour les données
+usethis::use_data_raw()
+usethis::use_data(DonneesTest)
+usethis::use_r("DonneesTest")
+devtools::document()
 # Set Continuous Integration
 # _GitHub
 usethis::use_github_action_check_standard()

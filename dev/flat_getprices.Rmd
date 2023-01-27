@@ -24,7 +24,8 @@ pkgload::load_all(export_all = FALSE)
 #' @param dataset tibble un jeu de données propre
 #' @param fonction chaine de caracteres mean ou median selon la métrique souhaite
 #' @param dobydepartement logical selon qu'on veut le resultat par departement ou agrégé
-#'
+#' @import googlesheets4
+#' @importFrom dplyr mutate summarise select rename pull group_by
 #' @return un tibble contenant les prix moyens ou médians du gazole, du SP98 et du E10
 #' @export
 #'
@@ -45,7 +46,8 @@ GetPrices <-
         mutate(operation = fonction)
       return(sortie)
     } else if (dobydepartement == FALSE & fonction == "mean") {
-      sortie <- tmp %>%mutate(departement="group")%>%group_by(departement)%>%
+      sortie <- tmp %>%mutate(departement="group")%>%
+        group_by(departement)%>%
         summarise(
           PrixGazole = mean(as.numeric(Gazole), na.rm = TRUE),
           PrixE10 = mean(as.numeric(E10), na.rm = TRUE),
@@ -79,18 +81,16 @@ GetPrices <-
 ```
 
 ```{r examples-GetPrices}
-dataset<-DonneesTest
+donnees<-FuelFrontalUtility::DonneesTest
+
 fonction<-"mean"
-depmean26<-GetPrices(dataset = dataset,fonction="mean",dobydepartement = TRUE )
-framedian26<-GetPrices(dataset = dataset,fonction="median",dobydepartement = FALSE )
+depmean26<-GetPrices(dataset = donnees,fonction="mean",dobydepartement = TRUE )
+framedian26<-GetPrices(dataset = donnees,fonction="median",dobydepartement = FALSE )
 ```
 
 ```{r tests-GetPrices}
 test_that("GetPrices works", {
-  urlgdoctest <-
-    "https://docs.google.com/spreadsheets/d/1aTGGqcUAjWg8Lz5sqQ5CzCEN7LbZdKGV_PdQC4YZ6Qw/edit?usp=sharing"
-  urlgsheettest <- "26-janv"
-  dataset <-ImportAndCleanData(urlgdoc = urlgdoctest, urlgsheet = urlgsheettest)
+  dataset <-FuelFrontalUtility::DonneesTest
   expect_equal(
     GetPrices(
       dataset = dataset,

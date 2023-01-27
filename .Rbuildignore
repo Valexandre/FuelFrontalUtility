@@ -3,3 +3,4 @@
 ^LICENSE\.md$
 ^FuelFrontalUtility\.Rproj$
 ^\.Rproj\.user$
+^data-raw$
