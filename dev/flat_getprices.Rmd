@@ -117,6 +117,6 @@ test_that("GetPrices works", {
 ```{r development-inflate, eval=FALSE}
 # Run but keep eval=FALSE to avoid infinite loop
 # Execute in the console directly
-fusen::inflate(flat_file = "dev/flat_getprices.Rmd", vignette_name = "Get prices")
+fusen::inflate(flat_file = "dev/flat_getprices.Rmd", vignette_name = "GetPrices")
 ```
 

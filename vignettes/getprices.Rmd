@@ -1,8 +1,8 @@
 ---
-title: "Get prices"
+title: "GetPrices"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{get-prices}
+  %\VignetteIndexEntry{getprices}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
